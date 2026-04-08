@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model Lead {
+  id Int @id @default(autoincrement())
+  nome String
+  telefone String @default("Não informado")
+  email String
+  mensagem String
+  createdAt DateTime @default(now())
+}
+
+model Abastecimento {
+  id        Int      @id @default(autoincrement())
+  
+  placa     String
+  marca     String?
+  modelo    String?
+  km        String?
+  horimetro String?
+  operador  String
+  
+  litros    Decimal
+  preco     Decimal
+  total     Decimal
+
+  posto     String
+  foto      String?
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id  Int @id @default(autoincrement())
+
+  user String 
+  password String
+  createdAt DateTime @default(now())
+}
+
+model Veiculo {
+  id              Int      @id @default(autoincrement())
+
+  placa           String   @unique
+  codigoFrota     String?  // Caso a empresa use numeração interna (Ex: CAM-01)
+  marca           String
+  modelo          String
+  anoFabricacao   Int?
+  anoModelo       Int?
+  chassi          String?
+  renavam         String?  @unique
+  cor             String?
+  combustivel     String?  // Flex, Diesel, Gasolina
+  kmAtual         Int      @default(0)
+  status          String   @default("Ativo") // Ativo, Manutenção, Vendido
+  observacoes     String?
+
+  createdAt        DateTime @default(now())
+  atualizadoEm     DateTime @updatedAt
+
+  @@map("veiculos")
+}
