@@ -36,6 +36,8 @@ model Abastecimento {
   preco     Decimal
   total     Decimal
 
+  dataAbastecimento DateTime @default(now())
+
   posto     String
   foto      String?
   createdAt DateTime @default(now())

@@ -97,33 +97,39 @@ app.post('/api/contato', async(req, res) => {
 app.post('/api/abastecimento', async (req, res) => {
     const { placa, marca, modelo, km, horimetro, operador, litros, preco, total, posto, foto} = req.body;
 
-     if (!placa || !operador || !litros || !preco || !posto) {
+    if (!placa || !operador || !litros || !preco || !posto) {
     return res.status(400).json({
       error: 'Campos obrigatórios: placa, operador, litros, preco, posto.'
     });
-  }
+    }
 
-  try {
-    const novoAbastecimento = await prisma.abastecimento.create({
-        data: {
-            placa, 
-            marca: marca || null,
-            modelo: modelo || null,
-            km: km || '0', 
-            horimetro: horimetro || '0',
-            operador,
-            litros: parseFloat(litros),
-            preco: parseFloat(preco),
-            total: parseFloat(total),
-            posto,
-            foto: foto || null,
-        }
+    let dateSave = undefined;
+
+    if(dateFinal) {
+        dateSave = new Date(dateFinal);
+    }
+    try {
+        const novoAbastecimento = await prisma.abastecimento.create({
+            data: {
+                placa, 
+                marca: marca || null,
+                modelo: modelo || null,
+                km: km || '0', 
+                horimetro: horimetro || '0',
+                operador,
+                litros: parseFloat(litros),
+                preco: parseFloat(preco),
+                total: parseFloat(total),
+                dataAbastecimento: dateSave,
+                posto,
+                foto: foto || null,
+            }
     });
     res.status(201).json(novoAbastecimento);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({error: 'Erro ao regristrar abastecimento.'});
-  }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: 'Erro ao regristrar abastecimento.'});
+    }
 });
 
 //lista abastecimentos
