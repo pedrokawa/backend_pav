@@ -137,14 +137,19 @@ app.post('/api/abastecimento', async (req, res) => {
 app.get('/api/abastecimento', async (req, res) => {
     try {
         const abastecimentos = await prisma.abastecimento.findMany({
-            orderBy: { dataAbastecimento: 'desc'}
+            orderBy: { createdAt: 'desc'}
         });
 
         const abastecimentosFormatados = abastecimentos.map((abast) => {
             let dataFormatada = null;
 
-            if (abast.dataAbastecimento) {
-                const data = new Date(abast.dataAbastecimento);
+            const dataCriacao = new Date(abast.createdAt);
+            const dataCorte = new Date('2026-04-22T00:00:00Z');
+
+            const dataReal = dataCriacao < dataCorte ? abast.createdAt : abast.dataAbastecimento;
+
+            if (dataReal) {
+                const data = new Date(dataReal);
 
                 const dia = String(data.getDate()).padStart(2, '0');
                 const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -175,20 +180,26 @@ app.get('/api/relatorio/abastecimento', async (req, res) => {
         const result = await Promise.all(veiculos.map(async (veiculo) => {
             const ultimoAbast = await prisma.abastecimento.findFirst({
                 where: { placa: veiculo.placa},
-                orderBy: { dataAbastecimento: 'desc'},
+                orderBy: { createdAt: 'desc'},
             });
 
-            if (ultimoAbast && ultimoAbast.dataAbastecimento) {
-                const data = new Date(ultimoAbast.dataAbastecimento);
-                const dia = String(data.getDate()).padStart(2, '0');
-                const mes = String(data.getMonth() + 1).padStart(2, '0');
-                const ano = data.getUTCFullYear();
-                const horas = String(data.getUTCHours()).padStart(2, '0');
-                const minutos = String(data.getUTCMinutes()).padStart(2, '0');
-            
+            if (ultimoAbast) {
+
+                const dataCriacao = new Date(ultimoAbast.createdAt);
+                const dataCorte = new Date('2026-04-22T00:00:00Z');
+
+                const dataReal = dataCriacao < dataCorte ? ultimoAbast.createdAt : ultimoAbast.dataAbastecimento;
+
+                if (dataReal) {
+                    const data = new Date(dataReal);
+                    const dia = String(data.getUTCDate()).padStart(2, '0');
+                    const mes = String(data.getUTCMonth() + 1).padStart(2, '0');
+                    const ano = data.getUTCFullYear();
+                    
                 ultimoAbast.dataAbastecimento = `${dia}/${mes}/${ano}`;
             
             }
+        }
             
             return {
                 placa: veiculo.placa,
@@ -197,7 +208,7 @@ app.get('/api/relatorio/abastecimento', async (req, res) => {
                 ultimoAbast: ultimoAbast || null
             };
         }));
-
+    
         return res.status(200).json(result);
     }catch (error){
         console.log('Erro ao buscar relatório.', error);
