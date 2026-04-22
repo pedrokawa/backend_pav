@@ -108,7 +108,7 @@ app.post('/api/abastecimento', async (req, res) => {
     if(dataFinal) {
         dateSave = new Date(dataFinal);
     }
-    
+
     try {
         const novoAbastecimento = await prisma.abastecimento.create({
             data: {
@@ -137,9 +137,28 @@ app.post('/api/abastecimento', async (req, res) => {
 app.get('/api/abastecimento', async (req, res) => {
     try {
         const abastecimentos = await prisma.abastecimento.findMany({
-            orderBy: { createdAt: 'desc'}
+            orderBy: { dataAbastecimento: 'desc'}
         });
-        res.json(abastecimentos);
+
+        const abastecimentosFormatados = abastecimentos.map((abast) => {
+            let dataFormatada = null;
+
+            if (abast.dataAbastecimento) {
+                const data = new Date(abast.dataAbastecimento);
+
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getUTCFullYear();
+                const horas = String(data.getUTCHours()).padStart(2, '0');
+                const minutos = String(data.getUTCMinutes()).padStart(2, '0');
+
+                dataFormatada = `${dia}/${mes}/${ano}`;
+             }   return {
+                    ...abast,
+                    dataAbastecimento: dataFormatada
+            }
+        } );
+        res.json(abastecimentosFormatados);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao buscar abastecimentos.'});
@@ -156,9 +175,21 @@ app.get('/api/relatorio/abastecimento', async (req, res) => {
         const result = await Promise.all(veiculos.map(async (veiculo) => {
             const ultimoAbast = await prisma.abastecimento.findFirst({
                 where: { placa: veiculo.placa},
-                orderBy: { createdAt: 'desc'},
+                orderBy: { dataAbastecimento: 'desc'},
             });
 
+            if (ultimoAbast && ultimoAbast.dataAbastecimento) {
+                const data = new Date(ultimoAbast.dataAbastecimento);
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getUTCFullYear();
+                const horas = String(data.getUTCHours()).padStart(2, '0');
+                const minutos = String(data.getUTCMinutes()).padStart(2, '0');
+            
+                ultimoAbast.dataAbastecimento = `${dia}/${mes}/${ano}`;
+            
+            }
+            
             return {
                 placa: veiculo.placa,
                 marca: veiculo.marca,
