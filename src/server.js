@@ -95,7 +95,7 @@ app.post('/api/contato', async(req, res) => {
 // ABASTECIMENTOS
 // regrista novo abastecimento
 app.post('/api/abastecimento', async (req, res) => {
-    const { placa, marca, modelo, km, horimetro, operador, litros, preco, total, dataAbastecimento, posto, foto} = req.body;
+    const { placa, marca, modelo, km, horimetro, operador, litros, preco, total, dataFinal, posto, foto} = req.body;
 
     if (!placa || !operador || !litros || !preco || !posto) {
     return res.status(400).json({
@@ -105,9 +105,10 @@ app.post('/api/abastecimento', async (req, res) => {
 
     let dateSave = undefined;
 
-    if(dataAbastecimento) {
-        dateSave = new Date(dataAbastecimento);
+    if(dataFinal) {
+        dateSave = new Date(dataFinal);
     }
+    
     try {
         const novoAbastecimento = await prisma.abastecimento.create({
             data: {
