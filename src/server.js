@@ -216,6 +216,31 @@ app.get('/api/relatorio/abastecimento', async (req, res) => {
     }
 });
 
+//atualiza abastecimento
+app.put('/api/abastecimento/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const dadosAtualizados = req.body;
+
+        const abastecimentoAtualizado = await prisma.abastecimento.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                ...dadosAtualizados,
+                litros: dadosAtualizados.litros ? parseFloat(dadosAtualizados.litros) : undefined,
+                preco: dadosAtualizados.preco ? parseFloat(dadosAtualizados.preco) : undefined,
+                total: dadosAtualizados.total ? parseFloat(dadosAtualizados.total) : undefined,
+            }
+        })
+
+        return res.status(200).json(abastecimentoAtualizado);
+    }catch (error) {
+        console.error("Erro ao atualizar abastecimento.", error);
+        return res.status(500).json({ erro: 'Erro ao atualizar abastecimento.'});
+    }
+})
+
 //USUARIOS
 //registra novo usuário 
 app.post('/api/usuario', async (req, res) => {
@@ -340,6 +365,26 @@ app.get('/api/veiculos', async (req, res) => {
         })
     }
 })
+
+//atualiza veiculo
+app.put('/api/veiculos/:id', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const dadosAtualizados = req.body;
+
+        const veiculoAtualizado = await prisma.veiculo.update({
+            where: {
+                id: Number(id)
+            },
+            data: dadosAtualizados,
+        });
+
+        return res.status(200).json(veiculoAtualizado);
+    } catch (error) {
+        console.error("Erro ao atualizar veículo.", error);
+        return res.status(500).json({ erro: 'Erro ao atualizar veículo.' });
+    }
+});
 
 if (process.env.NODE_ENV !== 'production'){
     app.listen(3000, () => console.log('Servidor rodando  na porta 3000'));
