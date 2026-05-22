@@ -241,6 +241,29 @@ app.put('/api/abastecimento/:id', async (req, res) => {
     }
 })
 
+//deleta abastecimento
+app.delete('api/abastecimento/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const abastecimentoDeletado = await prisma.abastecimento.delete({
+            where: {
+                id: Number(id)
+            }
+        });
+
+        return res.status(200).json({
+            message: "Abastecimento deletado com sucesso.",
+            abastecimento: abastecimentoDeletado
+        });
+    } catch (error) {
+        console.error("Erro ao deletar abastecimento", error);
+        return res.status(500).json({
+            error: 'Erro ao deletar abastecimento.'
+        });
+    }    
+})
+
 //USUARIOS
 //registra novo usuário 
 app.post('/api/usuario', async (req, res) => {
@@ -386,28 +409,6 @@ app.put('/api/veiculos/:id', async (req, res) => {
     }
 });
 
-//deleta abastecimento
-app.delete('api/abastecimento/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const abastecimentoDeletado = await prisma.abastecimento.delete({
-            where: {
-                id: Number(id)
-            }
-        });
-
-        return res.status(200).json({
-            message: "Abastecimento deletado com sucesso.",
-            abastecimento: abastecimentoDeletado
-        });
-    } catch (error) {
-        console.error("Erro ao deletar abastecimento", error);
-        return res.status(500).json({
-            error: 'Erro ao deletar abastecimento.'
-        });
-    }    
-})
 
 if (process.env.NODE_ENV !== 'production'){
     app.listen(3000, () => console.log('Servidor rodando  na porta 3000'));
