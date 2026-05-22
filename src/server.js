@@ -242,7 +242,7 @@ app.put('/api/abastecimento/:id', async (req, res) => {
 })
 
 //deleta abastecimento
-app.delete('api/abastecimento/:id', async (req, res) => {
+app.delete('/api/abastecimento/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
