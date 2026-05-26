@@ -409,6 +409,49 @@ app.put('/api/veiculos/:id', async (req, res) => {
     }
 });
 
+app.post('/api/medicao', async (req, res) => {
+    try {
+        const {
+            dataMedicao,
+            apontador, 
+            rodovia,
+            sentido,
+            kmIni,
+            kmFim,
+            extensao,
+            largura,
+            faixa,
+            areaTotal,
+            observacoes,
+            foto,
+        } = req.body;
+    
+        const novaMedicao = await prisma.medicao.create({
+            data: {
+                dataMedicao,
+                apontador, 
+                rodovia,
+                sentido,
+                kmIni: parseFloat(kmIni),
+                kmFim: parseFloat(kmFim),
+                extensao: parseFloat(extensao),
+                largura: parseFloat(largura),
+                faixa,
+                areaTotal: parseFloat(areaTotal),
+                observacoes,
+                foto,
+            }
+        });
+
+        res.status(201).json(novaMedicao);
+    }catch(error) {
+        console.error("Erro ao registrar medição:", error);
+        res.status(500).json({
+            error: "Erro ao registrar medição."
+        });
+    }
+})
+
 
 if (process.env.NODE_ENV !== 'production'){
     app.listen(3000, () => console.log('Servidor rodando  na porta 3000'));
