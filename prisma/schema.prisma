@@ -73,3 +73,25 @@ model Veiculo {
 
   @@map("veiculos")
 }
+
+model Medicao {
+  id        Int      @id @default(autoincrement())
+  
+  dataMedicao String
+
+  apontador String
+  rodovia   String
+  sentido   String
+  kmIni     Float
+  kmFim     Float
+  extensao  Float
+  largura   Float
+  faixa     String
+  areaTotal Float
+
+  observacoes String?
+
+  foto      String?
+
+  createdAt DateTime @default(now())      
+}
