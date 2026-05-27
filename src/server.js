@@ -439,7 +439,7 @@ app.post('/api/medicao', async (req, res) => {
                 faixa,
                 areaTotal: parseFloat(areaTotal),
                 observacoes,
-                foto,
+                foto: foto ? JSON.stringify(foto) : null,
             }
         });
 
