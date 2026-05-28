@@ -409,6 +409,7 @@ app.put('/api/veiculos/:id', async (req, res) => {
     }
 });
 
+//medicoes
 app.post('/api/medicao', async (req, res) => {
     try {
         const {
@@ -450,8 +451,41 @@ app.post('/api/medicao', async (req, res) => {
             error: "Erro ao registrar medição."
         });
     }
-})
+});
 
+app.get('/api/medicao', async (req, res) => {
+    try {
+        const medicoes = await prisma.medicao.findMany({
+            orderBy: {
+                dataMedicao: 'desc',
+            }
+        });
+
+        return res.status(200).json(medicoes);
+    } catch (error) {
+        console.error("Erro ao buscar medições:", error);
+        res.status(500).json({ error: 'Erro ao buscar medições.'});
+    }
+});
+
+app.put('/api/medicao/:id', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const dadosAtualizados = req.body;
+
+        const medicaoAtualizada = await prisma.medicao.update({
+            where: {
+                id: Number(id)
+            },
+            data: dadosAtualizados,
+        });
+
+        return res.status(200).json(medicaoAtualizada);
+    } catch (error) {
+        console.error("Erro ao atualizar medição.", error);
+        return res.status(500).json({ erro: 'Erro ao atualizar medição.' });
+    }
+});
 
 if (process.env.NODE_ENV !== 'production'){
     app.listen(3000, () => console.log('Servidor rodando  na porta 3000'));
