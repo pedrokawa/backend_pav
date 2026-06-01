@@ -425,6 +425,7 @@ app.post('/api/medicao', async (req, res) => {
             areaTotal,
             observacoes,
             foto,
+            espessura
         } = req.body;
     
         const novaMedicao = await prisma.medicao.create({
@@ -441,6 +442,7 @@ app.post('/api/medicao', async (req, res) => {
                 areaTotal: parseFloat(areaTotal),
                 observacoes,
                 foto: foto ? JSON.stringify(foto) : null,
+                espessura: parseFloat(espessura),
             }
         });
 
